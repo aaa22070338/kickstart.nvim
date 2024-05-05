@@ -12,4 +12,8 @@ vim.keymap.set('n', 'N', 'Nzzzv')
 
 vim.keymap.set('x', '<leader>p', '"_dP')
 
+vim.keymap.set('n', '+', [[<cmd>horizontal resize +5<cr>]]) -- make the window bigger horizontally by pressing shift and =
+vim.keymap.set('n', '_', [[<cmd>horizontal resize -5<cr>]]) -- make the window smaller horizontally by pressing shift and -
+vim.keymap.set('n', '<leader>=', [[<cmd>vertical resize +5<cr>]])
+vim.keymap.set('n', '<leader>-', [[<cmd>vertical resize -5<cr>]])
 return {}
