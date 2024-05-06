@@ -13,6 +13,7 @@ return {
   dependencies = {
     -- Creates a beautiful debugger UI
     'rcarriga/nvim-dap-ui',
+    'theHamsta/nvim-dap-virtual-text',
 
     -- Required dependency for nvim-dap-ui
     'nvim-neotest/nvim-nio',
@@ -43,6 +44,21 @@ return {
         -- Update this to ensure that you have the debuggers for the langs you want
         'delve',
       },
+    }
+    require('nvim-dap-virtual-text').setup {
+      enabled = true,
+      enable_commands = true,
+      highlight_changed_variables = true,
+      highlight_new_as_changed = false,
+      show_stop_reason = true,
+      commented = false,
+      only_first_definition = true,
+      all_references = false,
+      filter_references_pattern = '<module',
+      virt_text_pos = 'eol',
+      all_frames = false,
+      virt_lines = false,
+      virt_text_win_col = nil,
     }
 
     -- Basic debugging keymaps, feel free to change to your liking!
