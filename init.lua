@@ -89,6 +89,7 @@ P.S. You can delete this when you're done too. It's your config now! :)
 --  NOTE: Must happen before plugins are loaded (otherwise wrong leader will be used)
 vim.g.mapleader = ' '
 vim.g.maplocalleader = ' '
+vim.g.disable_autoformat = true
 
 -- Set to true if you have a Nerd Font installed and selected in the terminal
 vim.g.have_nerd_font = true
@@ -154,6 +155,8 @@ vim.opt.cursorline = true
 -- Minimal number of screen lines to keep above and below the cursor.
 vim.opt.scrolloff = 10
 
+-- take underscore as a keyword
+vim.opt.iskeyword:append '-'
 -- [[ Basic Keymaps ]]
 --  See `:help vim.keymap.set()`
 
@@ -277,22 +280,30 @@ require('lazy').setup({
     'folke/which-key.nvim',
     event = 'VimEnter', -- Sets the loading event to 'VimEnter'
     config = function() -- This is the function that runs, AFTER loading
-      require('which-key').setup()
+      require('which-key').setup {
+        plugins = {
+          registers = false, -- Shows your registers
+        },
+      }
 
       -- Document existing key chains
-      require('which-key').register {
-        ['<leader>c'] = { name = '[C]ode', _ = 'which_key_ignore' },
-        ['<leader>d'] = { name = '[D]ocument', _ = 'which_key_ignore' },
-        ['<leader>r'] = { name = '[R]ename', _ = 'which_key_ignore' },
-        ['<leader>s'] = { name = '[S]earch', _ = 'which_key_ignore' },
-        ['<leader>w'] = { name = '[W]orkspace / [W]indow', _ = 'which_key_ignore' },
-        ['<leader>t'] = { name = '[T]oggle / [T]ab', _ = 'which_key_ignore' },
-        ['<leader>h'] = { name = 'Git [H]unk', _ = 'which_key_ignore' },
+      require('which-key').add {
+        { '<leader>c', group = '[C]ode' },
+        { '<leader>c_', hidden = true },
+        { '<leader>d', group = '[D]ocument' },
+        { '<leader>d_', hidden = true },
+        { '<leader>h', group = 'Git [H]unk', mode = 'v' },
+        { '<leader>h_', hidden = true },
+        { '<leader>r', group = '[R]ename' },
+        { '<leader>r_', hidden = true },
+        { '<leader>s', group = '[S]earch' },
+        { '<leader>s_', hidden = true },
+        { '<leader>t', group = '[T]oggle / [T]ab' },
+        { '<leader>t_', hidden = true },
+        { '<leader>w', group = '[W]orkspace / [W]indow' },
+        { '<leader>w_', hidden = true },
       }
       -- visual mode
-      require('which-key').register({
-        ['<leader>h'] = { 'Git [H]unk' },
-      }, { mode = 'v' })
     end,
   },
 
@@ -565,20 +576,24 @@ require('lazy').setup({
       local servers = {
         -- clangd = {},
         -- gopls = {},
-        -- pyright = {
-        --   settings = {
-        --     pyright = { autoimportCompletions = true },
-        --     python = {
-        --       pythonPath = vim.fn.exepath 'python',
-        --       analysis = {
-        --         autoSearchPaths = true,
-        --         diagnosticMode = 'openFilesOnly',
-        --         useLibraryCodeForTypes = true,
-        --         typeCheckingMode = 'off',
-        --       },
-        --     },
-        --   },
-        -- },
+        pyright = {
+          settings = {
+            pyright = {
+              disableOrganizeImports = true,
+            },
+            python = {
+              -- pythonPath = vim.fn.exepath 'python',
+              analysis = {
+                ignore = { '*' },
+                autoimportCompletions = true,
+                autoSearchPaths = true,
+                -- diagnosticMode = 'openFilesOnly',
+                useLibraryCodeForTypes = true,
+                typeCheckingMode = 'off',
+              },
+            },
+          },
+        },
         -- rust_analyzer = {},
         -- ... etc. See `:help lspconfig-all` for a list of all the pre-configured LSPs
         --
@@ -601,6 +616,33 @@ require('lazy').setup({
               -- You can toggle below to ignore Lua_LS's noisy `missing-fields` warnings
               -- diagnostics = { disable = { 'missing-fields' } },
             },
+          },
+        },
+        -- ruff = {
+        --   init_options = {
+        --     settings = {
+        --       -- Ruff language server settings go here
+        --     },
+        --   },
+        -- },
+
+        ruff_lsp = {
+          init_options = {
+            settings = {
+              -- Any extra CLI arguments for `ruff` go here.
+              -- args = {},
+              args = {"--ignore=ALL"},
+
+              format = {
+                args = { '--config=' .. vim.loop.os_homedir() .. '/.config/ruff/ruff.toml' },
+              },
+              lint = {
+                enable = false,
+                args = { '--config=' .. vim.loop.os_homedir() .. '/.config/ruff/ruff.toml' },
+              },
+              showSyntaxErrors = false,
+            },
+            showSyntaxErrors = false,
           },
         },
       }
@@ -650,11 +692,14 @@ require('lazy').setup({
       },
     },
     opts = {
-      notify_on_error = false,
+      notify_on_error = true,
       format_on_save = function(bufnr)
         -- Disable "format_on_save lsp_fallback" for languages that don't
         -- have a well standardized coding style. You can add additional
         -- languages here or re-enable it for the disabled ones.
+        if vim.g.disable_autoformat or vim.b[bufnr].disable_autoformat then
+          return
+        end
         local disable_filetypes = { c = true, cpp = true }
         return {
           timeout_ms = 500,
@@ -664,7 +709,10 @@ require('lazy').setup({
       formatters_by_ft = {
         lua = { 'stylua' },
         -- Conform can also run multiple formatters sequentially
+        -- python = { "ruff", "autopep8" },
+        python = { 'ruff-lsp' },
         -- python = { "isort", "black" },
+        -- python = { "autopep8" },
         --
         -- You can use a sub-list to tell conform to run *until* a formatter
         -- is found.
@@ -784,16 +832,25 @@ require('lazy').setup({
     -- change the command in the config to whatever the name of that colorscheme is.
     --
     -- If you want to see what colorschemes are already installed, you can use `:Telescope colorscheme`.
+    -- 'olivercederborg/poimandres.nvim',
     'folke/tokyonight.nvim',
     priority = 1000, -- Make sure to load this before all the other start plugins.
     init = function()
       -- Load the colorscheme here.
       -- Like many other themes, this one has different styles, and you could load
       -- any other, such as 'tokyonight-storm', 'tokyonight-moon', or 'tokyonight-day'.
-      vim.cmd.colorscheme 'nightfox'
+      -- vim.cmd.colorscheme 'nightfox'
+      -- vim.cmd.colorscheme 'gruvbox'
+      vim.cmd.colorscheme 'everforest'
 
       -- You can configure highlights by doing something like:
       vim.cmd.hi 'Comment gui=none'
+      -- vim.api.nvim_set_hl(0, 'Normal', { bg = 'none' })
+      -- vim.api.nvim_set_hl(0, "NormalFloat", { bg = "none" })
+      vim.cmd [[
+        highlight Normal guibg=NONE ctermbg=NONE
+        highlight NonText guibg=NONE ctermbg=NONE
+      ]]
     end,
   },
 
@@ -818,6 +875,10 @@ require('lazy').setup({
       -- - sr)'  - [S]urround [R]eplace [)] [']
       require('mini.surround').setup()
 
+      -- require('mini.animate').setup{
+      --   cursor = { enabled = false },
+      --   scroll = { enabled = false },
+      -- }
       -- Simple and easy statusline.
       --  You could remove this setup call if you don't like it,
       --  and try some other statusline plugin
@@ -892,6 +953,7 @@ require('lazy').setup({
   --  Uncomment the following line and add your plugins to `lua/custom/plugins/*.lua` to get going.
   --    For additional information, see `:help lazy.nvim-lazy.nvim-structuring-your-plugins`
   { import = 'custom.plugins' },
+  { import = 'custom.configs' },
 }, {
   ui = {
     -- If you are using a Nerd Font: set icons to an empty table which will use the
