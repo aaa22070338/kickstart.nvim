@@ -35,16 +35,20 @@ vim.keymap.set('i', '<C-Del>', '<C-o>dw')
 vim.keymap.set('x', '<leader>p', '"_dP')
 
 -- 快速終端光標移出
-vim.keymap.set('t', '<C-h>', '<C-\\><C-N><C-w>h')
-vim.keymap.set('t', '<C-j>', '<C-\\><C-N><C-w>j')
-vim.keymap.set('t', '<C-k>', '<C-\\><C-N><C-w>k')
-vim.keymap.set('t', '<C-l>', '<C-\\><C-N><C-w>l')
+if vim.g.neovide then
+  vim.keymap.set('t', '<C-h>', '<C-\\><C-N><C-w>h')
+  vim.keymap.set('t', '<C-j>', '<C-\\><C-N><C-w>j')
+  vim.keymap.set('t', '<C-k>', '<C-\\><C-N><C-w>k')
+  vim.keymap.set('t', '<C-l>', '<C-\\><C-N><C-w>l')
+end
 
 -- 視窗管理
 vim.keymap.set('n', '<leader>wv', '<C-w>v', { desc = 'Split [W]indow [V]ertically' })
 vim.keymap.set('n', '<leader>wh', '<C-w>s', { desc = 'Split [W]indow [H]orizontally' })
 vim.keymap.set('n', '<leader>we', '<C-w>=', { desc = 'make Split [W]indow [E]qual' })
 vim.keymap.set('n', '<leader>wd', '<C-w>q', { desc = 'Split [W]indow Close' })
+
+
 -- 視窗移動
 vim.keymap.set('n', '<leader>wI', '<C-w>I')
 vim.keymap.set('n', '<leader>wH', '<C-w>H')
@@ -64,6 +68,10 @@ vim.keymap.set('n', '<C-Down>', [[<cmd>horizontal resize -2<cr>]]) -- make the w
 vim.keymap.set('n', '<C-Right>', [[<cmd>vertical resize +2<cr>]])
 vim.keymap.set('n', '<C-Left>', [[<cmd>vertical resize -2<cr>]])
 
+vim.keymap.set('n', 'L', '$')
+vim.keymap.set('v', 'L', '$')
+vim.keymap.set('n', 'H', '^')
+vim.keymap.set('v', 'H', '^')
 
 vim.keymap.set('n', '<F2>', vim.lsp.buf.rename)
 return {}

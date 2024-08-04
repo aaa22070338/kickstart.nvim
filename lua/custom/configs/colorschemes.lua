@@ -8,6 +8,7 @@ return {
     config = function()
       require('everforest').setup {
         transparent_background_level = 2,
+        ui_contrast = 'high'
       }
     end,
   },

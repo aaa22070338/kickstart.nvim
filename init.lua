@@ -631,7 +631,7 @@ require('lazy').setup({
             settings = {
               -- Any extra CLI arguments for `ruff` go here.
               -- args = {},
-              args = {"--ignore=ALL"},
+              args = { '--ignore=ALL' },
 
               format = {
                 args = { '--config=' .. vim.loop.os_homedir() .. '/.config/ruff/ruff.toml' },
@@ -741,12 +741,12 @@ require('lazy').setup({
           -- `friendly-snippets` contains a variety of premade snippets.
           --    See the README about individual language/framework/plugin snippets:
           --    https://github.com/rafamadriz/friendly-snippets
-          -- {
-          --   'rafamadriz/friendly-snippets',
-          --   config = function()
-          --     require('luasnip.loaders.from_vscode').lazy_load()
-          --   end,
-          -- },
+          {
+            'rafamadriz/friendly-snippets',
+            config = function()
+              require('luasnip.loaders.from_vscode').lazy_load()
+            end,
+          },
         },
       },
       'saadparwaiz1/cmp_luasnip',
@@ -756,14 +756,85 @@ require('lazy').setup({
       --  into multiple repos for maintenance purposes.
       'hrsh7th/cmp-nvim-lsp',
       'hrsh7th/cmp-path',
+      -- 'onsails/lspkind.nvim',
     },
     config = function()
       -- See `:help cmp`
       local cmp = require 'cmp'
       local luasnip = require 'luasnip'
+      -- local lspkind = require 'lspkind'
+      -- local kind_icons = {
+      --
+      --   Text = ' ',
+      --   Method = ' ',
+      --   Function = ' ',
+      --   Constructor = ' ',
+      --   Field = ' ',
+      --   Variable = ' ',
+      --   Class = ' ',
+      --   Interface = ' ',
+      --   Module = ' ',
+      --   Property = ' ',
+      --   Snippet = ' ',
+      --   Unit = ' ',
+      --   Value = ' ',
+      --   Enum = ' ',
+      --   Keyword = ' ',
+      --   Color = ' ',
+      --   File = ' ',
+      --   Reference = ' ',
+      --   Folder = ' ',
+      --   EnumMember = ' ',
+      --   Constant = ' ',
+      --   Struct = ' ',
+      --   Event = ' ',
+      --   Operator = ' ',
+      --   TypeParameter = ' ',
+      --   Copilot = '',
+      -- }
+    local kind_icons = {
+      Text = "󰉿",
+      Method = "󰆧",
+      Function = "󰊕",
+      Constructor = "",
+      Field = "󰜢",
+      Variable = "󰀫",
+      Class = "󰠱",
+      Interface = "",
+      Module = "",
+      Property = "󰜢",
+      Snippet = "",
+      Unit = "󰑭",
+      Value = "󰎠",
+      Enum = "",
+      Keyword = "󰌋",
+      Color = "󰏘",
+      File = "󰈙",
+      Reference = "󰈇",
+      Folder = "󰉋",
+      EnumMember = "",
+      Constant = "󰏿",
+      Struct = "󰙅",
+      Event = "",
+      Operator = "󰆕",
+      TypeParameter = "",
+      Copilot = '',
+    },
+
       luasnip.config.setup {}
 
       cmp.setup {
+        -- enabled = function()
+        --   -- disable completion in comments
+        --   local context = require 'cmp.config.context'
+        --   -- keep command mode completion enabled when cursor is in a comment
+        --   if vim.api.nvim_get_mode().mode == 'c' then
+        --     return true
+        --   else
+        --     return not context.in_treesitter_capture 'comment' and not context.in_syntax_group 'Comment'
+        --   end
+        -- end,
+
         snippet = {
           expand = function(args)
             luasnip.lsp_expand(args.body)
@@ -789,7 +860,7 @@ require('lazy').setup({
           --  This will auto-import if your LSP supports it.
           --  This will expand snippets if the LSP sent a snippet.
           ['<C-y>'] = cmp.mapping.confirm { select = true },
-          ['<Tab>'] = cmp.mapping.confirm { select = true },
+          -- ['<Tab>'] = cmp.mapping.confirm { select = true },
           -- Manually trigger a completion from nvim-cmp.
           --  Generally you don't need this, because nvim-cmp will display
           --  completions whenever it has completion options available.
@@ -823,6 +894,37 @@ require('lazy').setup({
           { name = 'path' },
           { name = 'copilot' },
         },
+        window = {
+          completion = {
+            winhighlight = 'Normal:Normal,FloatBorder:TelescopeBorder,CursorLine:Visual,Search:None',
+            border = 'rounded',
+          },
+          documentation = {
+            winhighlight = 'Normal:Normal,FloatBorder:TelescopeBorder,CursorLine:Visual,Search:None',
+            border = 'rounded',
+          },
+        },
+        formatting = {
+          format = function(entry, vim_item)
+            -- Kind icons
+            vim_item.kind = string.format('%s %s', kind_icons[vim_item.kind], vim_item.kind) -- This concatonates the icons with the name of the item kind
+            -- Source
+            vim_item.menu = ({
+              buffer = '[Buffer]',
+              nvim_lsp = '[LSP]',
+              luasnip = '[LuaSnip]',
+              nvim_lua = '[Lua]',
+              latex_symbols = '[LaTeX]',
+              -- copilot = "[Copilot]",
+            })[entry.source.name]
+            return vim_item
+          end,
+          expandable_indicator = true,
+        },
+        -- formatting = {
+        -- --   fields = { 'kind', 'abbr', 'menu' },
+        -- --   format = require('lspkind').cmp_format { with_text = false },
+        -- },
       }
     end,
   },
