@@ -568,7 +568,7 @@ require('lazy').setup({
       --  Feel free to add/remove any LSPs that you want here. They will automatically be installed.
       --
       --  Add any additional override configuration in the following tables. Available keys are:
-      --  - cmd (table): Override the default command used to start the server
+      -- - cmd (table): Override the default command used to start the server
       --  - filetypes (table): Override the default list of associated filetypes for the server
       --  - capabilities (table): Override fields in capabilities. Can be used to disable certain LSP features.
       --  - settings (table): Override the default settings passed when initializing the server.
@@ -576,25 +576,43 @@ require('lazy').setup({
       local servers = {
         -- clangd = {},
         -- gopls = {},
-        pyright = {
+        -- pyright = {
+        --   settings = {
+        --     pyright = {
+        --       disableOrganizeImports = true,
+        --     },
+        --     python = {
+        --       -- pythonPath = vim.fn.exepath 'python',
+        --       analysis = {
+        --         ignore = { '*' },
+        --         autoimportCompletions = true,
+        --         autoSearchPaths = true,
+        --         -- diagnosticMode = 'openFilesOnly',
+        --         useLibraryCodeForTypes = true,
+        --         typeCheckingMode = 'off',
+        --       },
+        --     },
+        --   },
+        -- },
+        basedpyright = {
           settings = {
-            pyright = {
-              disableOrganizeImports = true,
-            },
-            python = {
-              -- pythonPath = vim.fn.exepath 'python',
+            basedpyright = {
               analysis = {
-                ignore = { '*' },
-                autoimportCompletions = true,
-                autoSearchPaths = true,
-                -- diagnosticMode = 'openFilesOnly',
-                useLibraryCodeForTypes = true,
                 typeCheckingMode = 'off',
               },
             },
           },
         },
-        -- rust_analyzer = {},
+        -- rust_analyzer = {}
+        -- pylsp = {
+        --   settings = {
+        --     pylsp = {
+        --       plugins = {
+        --         pycodestyle = { enabled = false },
+        --       },
+        --     },
+        --   },
+        -- },
         -- ... etc. See `:help lspconfig-all` for a list of all the pre-configured LSPs
         --
         -- Some languages (like typescript) have entire language plugins that can be useful:
@@ -626,25 +644,25 @@ require('lazy').setup({
         --   },
         -- },
 
-        ruff_lsp = {
-          init_options = {
-            settings = {
-              -- Any extra CLI arguments for `ruff` go here.
-              -- args = {},
-              args = { '--ignore=ALL' },
-
-              format = {
-                args = { '--config=' .. vim.loop.os_homedir() .. '/.config/ruff/ruff.toml' },
-              },
-              lint = {
-                enable = false,
-                args = { '--config=' .. vim.loop.os_homedir() .. '/.config/ruff/ruff.toml' },
-              },
-              showSyntaxErrors = false,
-            },
-            showSyntaxErrors = false,
-          },
-        },
+        -- ruff_lsp = {
+        --   init_options = {
+        --     settings = {
+        --       -- Any extra CLI arguments for `ruff` go here.
+        --       -- args = {},
+        --       args = { '--ignore=ALL' },
+        --
+        --       -- format = {
+        --       --   args = { '--config=' .. vim.loop.os_homedir() .. '/.config/ruff/ruff.toml' },
+        --       -- },
+        --       -- lint = {
+        --       --   enable = false,
+        --       --   args = { '--config=' .. vim.loop.os_homedir() .. '/.config/ruff/ruff.toml' },
+        --       -- },
+        --       showSyntaxErrors = false,
+        --     },
+        --     showSyntaxErrors = false,
+        --   },
+        -- },
       }
 
       -- Ensure the servers and tools above are installed
@@ -671,9 +689,13 @@ require('lazy').setup({
             -- by the server configuration above. Useful when disabling
             -- certain features of an LSP (for example, turning off formatting for tsserver)
             server.capabilities = vim.tbl_deep_extend('force', {}, capabilities, server.capabilities or {})
+            -- print(server_name,server.settings.pylsp.plugins.pycodestyle.enabled)
             require('lspconfig')[server_name].setup(server)
           end,
         },
+      }
+      require('mason-lspconfig').setup_handlers {
+        ['rust_analyzer'] = function() end,
       }
     end,
   },
@@ -792,36 +814,35 @@ require('lazy').setup({
       --   TypeParameter = ' ',
       --   Copilot = '',
       -- }
-    local kind_icons = {
-      Text = "󰉿",
-      Method = "󰆧",
-      Function = "󰊕",
-      Constructor = "",
-      Field = "󰜢",
-      Variable = "󰀫",
-      Class = "󰠱",
-      Interface = "",
-      Module = "",
-      Property = "󰜢",
-      Snippet = "",
-      Unit = "󰑭",
-      Value = "󰎠",
-      Enum = "",
-      Keyword = "󰌋",
-      Color = "󰏘",
-      File = "󰈙",
-      Reference = "󰈇",
-      Folder = "󰉋",
-      EnumMember = "",
-      Constant = "󰏿",
-      Struct = "󰙅",
-      Event = "",
-      Operator = "󰆕",
-      TypeParameter = "",
-      Copilot = '',
-    },
-
-      luasnip.config.setup {}
+      local kind_icons =
+        {
+          Text = '󰉿',
+          Method = '󰆧',
+          Function = '󰊕',
+          Constructor = '',
+          Field = '󰜢',
+          Variable = '󰀫',
+          Class = '󰠱',
+          Interface = '',
+          Module = '',
+          Property = '󰜢',
+          Snippet = '',
+          Unit = '󰑭',
+          Value = '󰎠',
+          Enum = '',
+          Keyword = '󰌋',
+          Color = '󰏘',
+          File = '󰈙',
+          Reference = '󰈇',
+          Folder = '󰉋',
+          EnumMember = '',
+          Constant = '󰏿',
+          Struct = '󰙅',
+          Event = '',
+          Operator = '󰆕',
+          TypeParameter = '',
+          Copilot = '',
+        }, luasnip.config.setup {}
 
       cmp.setup {
         -- enabled = function()
@@ -889,10 +910,10 @@ require('lazy').setup({
           --    https://github.com/L3MON4D3/LuaSnip?tab=readme-ov-file#keymaps
         },
         sources = {
-          { name = 'nvim_lsp', max_item_count = nil, priority = 100},
+          { name = 'nvim_lsp', max_item_count = nil, priority = 100 },
           { name = 'luasnip' },
           { name = 'path' },
-          { name = 'copilot'},
+          { name = 'copilot' },
         },
         window = {
           completion = {
@@ -943,7 +964,9 @@ require('lazy').setup({
       -- any other, such as 'tokyonight-storm', 'tokyonight-moon', or 'tokyonight-day'.
       -- vim.cmd.colorscheme 'nightfox'
       -- vim.cmd.colorscheme 'gruvbox'
-      vim.cmd.colorscheme 'everforest'
+      vim.cmd.colorscheme 'tokyonight'
+
+      -- vim.cmd.colorscheme 'everforest'
 
       -- You can configure highlights by doing something like:
       vim.cmd.hi 'Comment gui=none'
@@ -1077,6 +1100,25 @@ require('lazy').setup({
     },
   },
 })
-
+--
+-- require('lspconfig').pylsp.setup {
+--   settings = {
+--     pylsp = {
+--       plugins = {
+--         pycodestyle = { enabled = false },
+--       },
+--     },
+--   },
+-- }
+--
+-- require('lspconfig').basedpyright.setup {
+--   settings = {
+--     basedpyright = {
+--       analysis = {
+--         typeCheckingMode = 'off',
+--       },
+--     },
+--   },
+-- }
 -- The line beneath this is called `modeline`. See `:help modeline`
 -- vim: ts=2 sts=2 sw=2 et
