@@ -20,11 +20,11 @@ return {
     -- Set menu
     dashboard.section.buttons.val = {
       dashboard.button('e', '  > New File', '<cmd>ene<CR>'),
-      dashboard.button('\\', '  > Toggle file explorer', ':Neotree reveal position=right<CR>'),
-      dashboard.button('SPC sf', '󰱼 > Find File', '<cmd>Telescope find_files<CR>'),
+      dashboard.button('\\', '  > Toggle file explorer', ':Neotree reveal position=float<CR>'),
+      dashboard.button('SPC sf', '󰱼  > Find File', '<cmd>Telescope find_files<CR>'),
       dashboard.button('SPC /', '  > Find Word', '<cmd>Telescope live_grep<CR>'),
       dashboard.button('SPC wr', '󰁯  > Restore Session For Current Directory', '<cmd>SessionRestore<CR>'),
-      dashboard.button('q', ' > Quit NVIM', '<cmd>qa<CR>'),
+      dashboard.button('q', '  > Quit NVIM', '<cmd>qa<CR>'),
     }
 
     -- Send config to alpha
