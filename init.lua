@@ -577,19 +577,28 @@ require('lazy').setup({
       local servers = {
         -- clangd = {},
         -- gopls = {},
-        pyright = {
+        -- pyright = {
+        --   settings = {
+        --     pyright = {
+        --       disableOrganizeImports = true,
+        --     },
+        --     python = {
+        --       -- pythonPath = vim.fn.exepath 'python',
+        --       analysis = {
+        --         ignore = { '*' },
+        --         autoimportCompletions = true,
+        --         autoSearchPaths = true,
+        --         -- diagnosticMode = 'openFilesOnly',
+        --         useLibraryCodeForTypes = true,
+        --         typeCheckingMode = 'off',
+        --       },
+        --     },
+        --   },
+        -- },
+        basedpyright = {
           settings = {
-            pyright = {
-              disableOrganizeImports = true,
-            },
-            python = {
-              -- pythonPath = vim.fn.exepath 'python',
+            basedpyright = {
               analysis = {
-                ignore = { '*' },
-                autoimportCompletions = true,
-                autoSearchPaths = true,
-                -- diagnosticMode = 'openFilesOnly',
-                useLibraryCodeForTypes = true,
                 typeCheckingMode = 'off',
               },
             },
@@ -627,7 +636,7 @@ require('lazy').setup({
         --   },
         -- },
 
-        ruff_lsp = {
+        ruff = {
           init_options = {
             settings = {
               -- Any extra CLI arguments for `ruff` go here.
@@ -645,7 +654,7 @@ require('lazy').setup({
             },
             showSyntaxErrors = false,
           },
-        },
+       },
       }
 
       -- Ensure the servers and tools above are installed
@@ -710,8 +719,8 @@ require('lazy').setup({
       formatters_by_ft = {
         lua = { 'stylua' },
         -- Conform can also run multiple formatters sequentially
-        -- python = { "ruff", "autopep8" },
-        python = { 'ruff-lsp' },
+        python = { "ruff", "autopep8" },
+        -- python = { 'ruff' },
         -- python = { "isort", "black" },
         -- python = { "autopep8" },
         --
