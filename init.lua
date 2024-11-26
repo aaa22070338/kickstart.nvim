@@ -1,4 +1,3 @@
-
 --[[
 
 =====================================================================
@@ -654,7 +653,7 @@ require('lazy').setup({
             },
             showSyntaxErrors = false,
           },
-       },
+        },
       }
 
       -- Ensure the servers and tools above are installed
@@ -719,7 +718,7 @@ require('lazy').setup({
       formatters_by_ft = {
         lua = { 'stylua' },
         -- Conform can also run multiple formatters sequentially
-        python = { "ruff", "autopep8" },
+        python = { 'ruff', 'autopep8' },
         -- python = { 'ruff' },
         -- python = { "isort", "black" },
         -- python = { "autopep8" },
@@ -802,36 +801,35 @@ require('lazy').setup({
       --   TypeParameter = ' ',
       --   Copilot = '',
       -- }
-    local kind_icons = {
-      Text = "󰉿",
-      Method = "󰆧",
-      Function = "󰊕",
-      Constructor = "",
-      Field = "󰜢",
-      Variable = "󰀫",
-      Class = "󰠱",
-      Interface = "",
-      Module = "",
-      Property = "󰜢",
-      Snippet = "",
-      Unit = "󰑭",
-      Value = "󰎠",
-      Enum = "",
-      Keyword = "󰌋",
-      Color = "󰏘",
-      File = "󰈙",
-      Reference = "󰈇",
-      Folder = "󰉋",
-      EnumMember = "",
-      Constant = "󰏿",
-      Struct = "󰙅",
-      Event = "",
-      Operator = "󰆕",
-      TypeParameter = "",
-      Copilot = '',
-    },
-
-      luasnip.config.setup {}
+      local kind_icons =
+        {
+          Text = '󰉿',
+          Method = '󰆧',
+          Function = '󰊕',
+          Constructor = '',
+          Field = '󰜢',
+          Variable = '󰀫',
+          Class = '󰠱',
+          Interface = '',
+          Module = '',
+          Property = '󰜢',
+          Snippet = '',
+          Unit = '󰑭',
+          Value = '󰎠',
+          Enum = '',
+          Keyword = '󰌋',
+          Color = '󰏘',
+          File = '󰈙',
+          Reference = '󰈇',
+          Folder = '󰉋',
+          EnumMember = '',
+          Constant = '󰏿',
+          Struct = '󰙅',
+          Event = '',
+          Operator = '󰆕',
+          TypeParameter = '',
+          Copilot = '',
+        }, luasnip.config.setup {}
 
       cmp.setup {
         -- enabled = function()
@@ -899,10 +897,10 @@ require('lazy').setup({
           --    https://github.com/L3MON4D3/LuaSnip?tab=readme-ov-file#keymaps
         },
         sources = {
-          { name = 'nvim_lsp', max_item_count = nil, priority = 100},
+          { name = 'nvim_lsp', max_item_count = nil, priority = 100 },
           { name = 'luasnip' },
           { name = 'path' },
-          { name = 'copilot'},
+          { name = 'copilot' },
         },
         window = {
           completion = {
@@ -1032,7 +1030,15 @@ require('lazy').setup({
       -- Prefer git instead of curl in order to improve connectivity in some environments
       require('nvim-treesitter.install').prefer_git = true
       ---@diagnostic disable-next-line: missing-fields
-      require('nvim-treesitter.configs').setup(opts)
+      require('nvim-treesitter.configs').setup {
+        incremental_selection = {
+          enable = true,
+          keymaps = {
+            node_incremental = 'v',
+            node_decremental = 'V',
+          },
+        },
+      }
 
       -- There are additional nvim-treesitter modules that you can use to interact
       -- with nvim-treesitter. You should go explore a few and see what interests you:
