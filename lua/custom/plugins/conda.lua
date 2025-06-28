@@ -16,6 +16,9 @@ return {
             command = 'fd python.exe$ C:/ProgramData/anaconda3 --full-path --color never -E /proc',
             type = 'anaconda',
           },
+          anaconda_envs = {
+            command = 'fd python$ ~/miniforge3/envs --full-path --color never -E /proc'
+          }
         },
       },
     }

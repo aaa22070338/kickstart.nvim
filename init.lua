@@ -593,7 +593,7 @@ require('lazy').setup({
         --       },
         --     },
         --   },
-        -- },
+--       },
         basedpyright = {
           settings = {
             basedpyright = {
@@ -635,25 +635,25 @@ require('lazy').setup({
         --   },
         -- },
 
-        ruff = {
-          init_options = {
-            settings = {
-              -- Any extra CLI arguments for `ruff` go here.
-              -- args = {},
-              args = { '--ignore=ALL' },
-
-              format = {
-                args = { '--config=' .. vim.loop.os_homedir() .. '/.config/ruff/ruff.toml' },
-              },
-              lint = {
-                enable = false,
-                args = { '--config=' .. vim.loop.os_homedir() .. '/.config/ruff/ruff.toml' },
-              },
-              showSyntaxErrors = false,
-            },
-            showSyntaxErrors = false,
-          },
-        },
+      --   ruff = {
+      --     init_options = {
+      --       settings = {
+      --         -- Any extra CLI arguments for `ruff` go here.
+      --         -- args = {},
+      --         args = { '--ignore=ALL' },
+      --
+      --         format = {
+      --           args = { '--config=' .. vim.loop.os_homedir() .. '/.config/ruff/ruff.toml' },
+      --         },
+      --         lint = {
+      --           enable = false,
+      --           args = { '--config=' .. vim.loop.os_homedir() .. '/.config/ruff/ruff.toml' },
+      --         },
+      --         showSyntaxErrors = false,
+      --       },
+      --       showSyntaxErrors = false,
+      --     },
+      --   },
       }
 
       -- Ensure the servers and tools above are installed
@@ -757,6 +757,11 @@ require('lazy').setup({
             end,
           },
         },
+        config = function()
+          require("luasnip.loaders.from_lua").lazy_load({
+            paths = { "~/.config/nvim/lua/snippets" }
+          })
+        end,
       },
       'saadparwaiz1/cmp_luasnip',
 
@@ -829,7 +834,18 @@ require('lazy').setup({
           Operator = '󰆕',
           TypeParameter = '',
           Copilot = '',
-        }, luasnip.config.setup {}
+        }
+
+      -- luasnip.filetype_extend('markdown',{"tex"})
+      --
+      -- require("luasnip.loaders.from_lua").load({paths = "~/.config/nvim/lua/custom/plugins/latex_luasnip"})
+      -- require("luasnip.loaders.from_lua").load({paths = "~/.config/nvim/lua/custom/plugins/latex_luasnip/tex"})
+
+      luasnip.config.setup{
+        enable_autosnippets = true, -- Enable auto-snippets
+        cut_selection_keys = '<Tab>', -- Key to cut the current selection in a snippet
+      }
+
 
       cmp.setup {
         -- enabled = function()
@@ -900,6 +916,7 @@ require('lazy').setup({
           { name = 'nvim_lsp', max_item_count = nil, priority = 100 },
           { name = 'luasnip' },
           { name = 'path' },
+          { name = 'render-markdown' },
           { name = 'copilot' },
         },
         window = {
@@ -920,6 +937,7 @@ require('lazy').setup({
             vim_item.menu = ({
               buffer = '[Buffer]',
               nvim_lsp = '[LSP]',
+              render_markdown = '[Markdown]',
               luasnip = '[LuaSnip]',
               nvim_lua = '[Lua]',
               latex_symbols = '[LaTeX]',
@@ -952,11 +970,13 @@ require('lazy').setup({
       -- vim.cmd.colorscheme 'nightfox'
       -- vim.cmd.colorscheme 'gruvbox'
       vim.cmd.colorscheme 'everforest'
+      -- vim.cmd.colorscheme 'tokyonight'
 
       -- You can configure highlights by doing something like:
-      vim.cmd.hi 'Comment gui=none'
       -- vim.api.nvim_set_hl(0, 'Normal', { bg = 'none' })
       -- vim.api.nvim_set_hl(0, "NormalFloat", { bg = "none" })
+      --
+      vim.cmd.hi 'Comment gui=none'
       vim.cmd [[
         highlight Normal guibg=NONE ctermbg=NONE
         highlight NonText guibg=NONE ctermbg=NONE
@@ -1012,7 +1032,7 @@ require('lazy').setup({
     'nvim-treesitter/nvim-treesitter',
     build = ':TSUpdate',
     opts = {
-      ensure_installed = { 'bash', 'c', 'html', 'lua', 'luadoc', 'markdown', 'vim', 'vimdoc' },
+      ensure_installed = { 'bash', 'c', 'html', 'lua', 'luadoc', 'markdown', 'markdown_inline', 'vim', 'vimdoc' },
       -- Autoinstall languages that are not installed
       auto_install = true,
       highlight = {
@@ -1031,6 +1051,15 @@ require('lazy').setup({
       require('nvim-treesitter.install').prefer_git = true
       ---@diagnostic disable-next-line: missing-fields
       require('nvim-treesitter.configs').setup {
+        highlight = {
+          enable = true,
+          -- disable = { "latex", "markdown" },
+          -- Setting this to true will run `:h syntax` and tree-sitter at the same time.
+          -- Set this to `true` if you depend on 'syntax' being enabled (like for indentation).
+          -- Using this option may slow down your editor, and you may see some duplicate highlights.
+          -- Instead of true it can also be a list of languages
+          additional_vim_regex_highlighting = false,
+        },
         incremental_selection = {
           enable = true,
           keymaps = {
@@ -1039,25 +1068,25 @@ require('lazy').setup({
           },
         },
       }
-      require('treesitter-context').setup {
-        enable = true, -- Enable this plugin (Can be enabled/disabled later via commands)
-        multiwindow = false, -- Enable multiwindow support.
-        max_lines = 0, -- How many lines the window should span. Values <= 0 mean no limit.
-        min_window_height = 0, -- Minimum editor window height to enable context. Values <= 0 mean no limit.
-        line_numbers = true,
-        multiline_threshold = 20, -- Maximum number of lines to show for a single context
-        trim_scope = 'outer', -- Which context lines to discard if `max_lines` is exceeded. Choices: 'inner', 'outer'
-        mode = 'cursor', -- Line used to calculate context. Choices: 'cursor', 'topline'
-        -- Separator between context and content. Should be a single character string, like '-'.
-        -- When separator is set, the context will only show up when there are at least 2 lines above cursorline.
-        separator = nil,
-        zindex = 20, -- The Z-index of the context window
-        on_attach = nil, -- (fun(buf: integer): boolean) return false to disable attaching
-      }
-      vim.cmd([[
-          hi TreesitterContextBottom gui=underline guisp=Grey
-          hi TreesitterContextLineNumberBottom gui=underline guisp=Grey
-      ]])
+      -- require('treesitter-context').setup {
+      --   enable = true, -- Enable this plugin (Can be enabled/disabled later via commands)
+      --   multiwindow = false, -- Enable multiwindow support.
+      --   max_lines = 0, -- How many lines the window should span. Values <= 0 mean no limit.
+      --   min_window_height = 0, -- Minimum editor window height to enable context. Values <= 0 mean no limit.
+      --   line_numbers = true,
+      --   multiline_threshold = 20, -- Maximum number of lines to show for a single context
+      --   trim_scope = 'outer', -- Which context lines to discard if `max_lines` is exceeded. Choices: 'inner', 'outer'
+      --   mode = 'cursor', -- Line used to calculate context. Choices: 'cursor', 'topline'
+      --   -- Separator between context and content. Should be a single character string, like '-'.
+      --   -- When separator is set, the context will only show up when there are at least 2 lines above cursorline.
+      --   separator = nil,
+      --   zindex = 20, -- The Z-index of the context window
+      --   on_attach = nil, -- (fun(buf: integer): boolean) return false to disable attaching
+      -- }
+      -- vim.cmd([[
+      --     hi TreesitterContextBottom gui=underline guisp=Grey
+      --     hi TreesitterContextLineNumberBottom gui=underline guisp=Grey
+      -- ]])
       -- There are additional nvim-treesitter modules that you can use to interact
       -- with nvim-treesitter. You should go explore a few and see what interests you:
       --

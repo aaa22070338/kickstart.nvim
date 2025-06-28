@@ -74,4 +74,55 @@ vim.keymap.set('n', 'H', '^')
 vim.keymap.set('v', 'H', '^')
 
 vim.keymap.set('n', '<F2>', vim.lsp.buf.rename)
+
+
+
+
+-- Snippet management with luasnip
+vim.keymap.set({ "i", "s" }, "<C-j>", function()
+  if require("luasnip").choice_active() then
+    return "<Plug>luasnip-next-choice"
+  else
+    return "<C-j>"
+  end
+end, { expr = true, silent = true })
+
+vim.keymap.set({ "i", "s" }, "<C-k>", function()
+  if require("luasnip").choice_active() then
+    return "<Plug>luasnip-prev-choice"
+  else
+    return "<C-k>"
+  end
+end, { expr = true, silent = true })
+
+local untrigger = function()
+  -- get the snippet
+  local snip = require("luasnip").session.current_nodes[vim.api.nvim_get_current_buf()].parent.snippet
+  -- get its trigger
+  local trig = snip.trigger
+  -- replace that region with the trigger
+  local node_from, node_to = snip.mark:pos_begin_end_raw()
+  vim.api.nvim_buf_set_text(
+    0,
+    node_from[1],
+    node_from[2],
+    node_to[1],
+    node_to[2],
+    { trig }
+  )
+  -- reset the cursor-position to ahead the trigger
+  vim.fn.setpos(".", { 0, node_from[1] + 1, node_from[2] + 1 + string.len(trig) })
+end
+
+
+vim.keymap.set({ "i", "s" }, "<c-x>", function()
+  if require("luasnip").in_snippet() then
+    untrigger()
+    require("luasnip").unlink_current()
+  end
+end, {
+  desc = "Undo a snippet",
+})
+
+
 return {}

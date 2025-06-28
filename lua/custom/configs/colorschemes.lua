@@ -83,4 +83,15 @@ return {
     --   vim.cmd 'colorscheme poimandres'
     -- end,
   },
+  {
+    "rebelot/kanagawa.nvim",
+    config = function()
+      require('kanagawa').setup {
+      transparent = true,
+      -- dimInactive = true,
+      terminalColors = true,
+    }
+    end,
+
+  }
 }
